@@ -54,7 +54,7 @@ awk '\
 $diff_file
 
 #
-# create svn commit command.
+# create operating svn-repository command.
 #
 awk 'BEGIN{ print "cd svn" ;} \
   /^Only in svn/ \
