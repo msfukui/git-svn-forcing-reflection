@@ -9,8 +9,9 @@
 #
 
 if (($1 == "--dry-run" && ($2 == "" || $3 == "" || $4 == "" || $5 == "")) || \
-    ($1 != "--dry-run" && ($1 == "" || $2 == "" || $3 == "" || $4 == "")) then
-  echo "argument error: $ $0 [--dry-run] git-repository git-branch-name svn-repository svn-branch-name"
+    ($1 != "--dry-run" && ($1 == "" || $2 == "" || $3 == "" || $4 == ""))) then
+  echo "ERROR: Argument error."
+  echo "ERROR: Usage: $ $0 [--dry-run] git-repository git-branch-name svn-repository svn-branch-name"
   exit 1
 endif
 
@@ -39,7 +40,10 @@ set prev_git_commit_file = ".reflection-prev_git_commit"
 touch $prev_git_commit_file
 set prev_git_commit = `cat $prev_git_commit_file`
 
-echo "dry-run-mode: $dry_run_mode"
+if ($dry_run_mode == "off") then
+else
+  echo "dry-running..."
+endif
 
 mkdir $tempdir
 cd $tempdir
@@ -93,9 +97,9 @@ $diff_file | csh -fx
 cd git
 git log --graph ^${prev_git_commit} HEAD >! ../$comment_file
 if ($dry_run_mode == "off") then
-  git log --pretty=format:"%H" HEAD^..HEAD >! ../../$prev_git_commit_file
+  git log --pretty=format:"%H" HEAD^..HEAD | head -1 >! ../../$prev_git_commit_file
 else
-  git log --pretty=format:"%H" HEAD^..HEAD >! ../$prev_git_commit_file
+  git log --pretty=format:"%H" HEAD^..HEAD | head -1 >! ../$prev_git_commit_file
 endif
 cd ..
 
@@ -116,4 +120,7 @@ if ($dry_run_mode == "off") then
 else
 endif
 
-echo "Reflected the contents of [$gitrepo] on [$svnrepo], OK."
+echo ""
+echo "git-repository: [$gitrepo/$gitbranch]"
+echo "svn-repository: [$svnrepo/$svnbranch]"
+echo "Reflection, OK."
