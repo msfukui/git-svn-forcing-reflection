@@ -32,6 +32,7 @@ else
 endif
 
 set datetime = `date +"%Y%m%d%H%M%S"`
+set date     = `date`
 set tempdir = "temp.$datetime.$$"
 set diff_file = ".reflection-diff_file"
 
@@ -95,7 +96,14 @@ $diff_file | csh -fx
 # create commit logs and save current "HEAD" commit value.
 #
 cd git
-git log --graph ^${prev_git_commit} HEAD >! ../$comment_file
+echo "Author: git-svn-forcing-reflection" >! ../$comment_file
+echo "Date: $date" >>! ../$comment_file
+echo ""
+if ($prev_git_commit == "") then
+  git log --graph HEAD >>! ../$comment_file
+else
+  git log --graph ^${prev_git_commit} HEAD >>! ../$comment_file
+endif
 if ($dry_run_mode == "off") then
   git log --pretty=format:"%H" HEAD^..HEAD | head -1 >! ../../$prev_git_commit_file
 else
