@@ -11,8 +11,8 @@ svn checkout --username=svn-repo --password=svn-repo svn://localhost svn-repo-sa
 cd svn-repo-sample
 mkdir trunk
 svn add trunk
-svn commit -m "svn の初回コミット。（trunk 作成）"
-svn update
+svn commit --username=svn-repo --password=svn-repo -m "svn の初回コミット。（trunk 作成）"
+svn update --username=svn-repo --password=svn-repo
 cd ..
 rm -fr svn-repo-sample
 
@@ -20,8 +20,8 @@ svn checkout --username=svn-repo --password=svn-repo svn://localhost/trunk svn-r
 cd svn-repo-sample
 cp -pr ../../../data/svn/* .
 svn add *
-svn commit -m "svn の二回目コミット。（trunk にテストファイルを追加。）"
-svn update
+svn commit --username=svn-repo --password=svn-repo -m "svn の二回目コミット。（trunk にテストファイルを追加。）"
+svn update --username=svn-repo --password=svn-repo
 cd ..
 
 cd ../..
