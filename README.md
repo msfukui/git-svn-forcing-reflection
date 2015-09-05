@@ -10,21 +10,21 @@ svn から git ベースにコード・レポジトリの移行を進めるに�
 
 最初は git-svn をうまく使うことを考えたのですが、merge の際の conflict の解消が厳しかったので、個別にスクリプトを作りました。
 
-自分でもかなり筋悪な対応だとは思いますので、もっと良い方法があればぜひご指摘いただけると嬉しいです。
+自分でもかなり筋悪な対応だとは思います。もっと良い方法があればぜひご指摘いただけると嬉しいです。
 
 ## Requirement
 
-* スクリプトは csh で書いたため、実行には csh が必要です。
+* スクリプトは csh で書いているため、実行には csh が必要です。
 
-* 内部で git, svn, diff, awk を使っているため、それぞれが必要です。
+* 内部で git, svn, diff, awk を使っているため、それぞれの事前のセットアップが必要です。
 
 * 実行時ディレクトリ配下に作業ディレクトリを作成するため、実行時ディレクトリには書き込み権限が必要です。
 
 ## Note
 
-* 前回のコミットログからの差分を元にコミットメッセージを生成するため、*初回実行時*には、前回のコミットのSHA-1ハッシュ値を、実行時ディレクトリ直下の .reflection-prev_git_commit に書き込んでおく必要があります。
+* 前回のコミットログからの差分を元に svn の commit メッセージを生成するため、*初回実行時*には、前回の commit のSHA-1ハッシュ値を、実行時ディレクトリ直下の .reflection-prev\_git\_commit に書き込んでおく必要があります。（次回以降は .reflection-prev\_git\_commit に前回分が記録されますので以後の作成は不要です。）
 
-* svn のコミットログには author などの情報は反映しないことになるため、svn 側のログは捨てる覚悟でお願いします。
+* svn のコミットログには author などの情報は反映しないことになるため、svn のログは捨てる覚悟でお願いします。
 
 ## Usage
 
@@ -36,18 +36,40 @@ $ wget https://raw.githubusercontent.com/msfukui/git-svn-forcing-reflection/mast
 $ wget https://raw.githubusercontent.com/msfukui/git-svn-forcing-reflection/master/setup.csh
 $ chmod 750 git-svn-forcing-reflection.csh setup.csh
 $ cd ..
+$ ./bin/setup.csh git@github.com:msfukui/git-repo-sample.git master
+Cloning into 'git'...
+remote: Counting objects: 176, done.
+remote: Total 176 (delta 0), reused 0 (delta 0), pack-reused 176
+Receiving objects: 100% (176/176), 25.50 KiB | 0 bytes/s, done.
+Resolving deltas: 100% (80/80), done.
+Checking connectivity... done.
+
+git-repository: [git@github.com:msfukui/git-repo-sample.git/master]
+  Created [.reflection-prev_git_commit].
+  Last commit SHA-1 hash value [16b67fa41447a5b6b882dd867f795bea20b560e7].
+OK.
+$
 ```
 
 ### Reflection
 
+#### dry running
+
 ```sh
+$ ./bin/git-svn-forcing-reflection.csh --dry-run git@github.com:msfukui/git-repo-sample.git master http://localhost:3690/svn-repo-sample trunk
+```
+
+#### commit
+
+```sh
+$ ./bin/git-svn-forcing-reflection.csh git@github.com:msfukui/git-repo-sample.git master http://localhost:3690/svn-repo-sample trunk
 ```
 
 ## TODO
 
-* 初回実行時のコミットのSHA-1ハッシュ値を準備する必要がある件を忘れないように極力省力化したい。
-
 * svn への commit 時のコミットログメッセージをもう少しわかりやすくしたい。
+
+* 万が一 svn の内容と git の内容がずれた時が怖いので、定期的に compare する仕組みを追加したい。
 
 ## License
 
