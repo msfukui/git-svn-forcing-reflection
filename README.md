@@ -33,10 +33,10 @@ svn から git ベースにコード・レポジトリの移行を進めるに�
 ```sh
 $ mkdir bin; cd bin
 $ wget https://raw.githubusercontent.com/msfukui/git-svn-forcing-reflection/master/git-svn-forcing-reflection.csh
-$ wget https://raw.githubusercontent.com/msfukui/git-svn-forcing-reflection/master/setup.csh
-$ chmod 750 git-svn-forcing-reflection.csh setup.csh
+$ wget https://raw.githubusercontent.com/msfukui/git-svn-forcing-reflection/master/git-first.csh
+$ chmod 750 git-svn-forcing-reflection.csh git-first.csh
 $ cd ..
-$ ./bin/setup.csh git@github.com:msfukui/git-repo-sample.git master
+$ ./bin/git-first.csh git@github.com:msfukui/git-repo-sample.git master
 Cloning into 'git'...
 remote: Counting objects: 176, done.
 remote: Total 176 (delta 0), reused 0 (delta 0), pack-reused 176
@@ -56,13 +56,13 @@ $
 #### dry running
 
 ```sh
-$ ./bin/git-svn-forcing-reflection.csh --dry-run git@github.com:msfukui/git-repo-sample.git master http://localhost:3690/svn-repo-sample trunk
+$ ./bin/git-svn-forcing-reflection.csh --dry-run git@github.com:msfukui/git-repo-sample.git master svn://localhost/svn-repo-sample trunk
 ```
 
 #### commit
 
 ```sh
-$ ./bin/git-svn-forcing-reflection.csh git@github.com:msfukui/git-repo-sample.git master http://localhost:3690/svn-repo-sample trunk
+$ ./bin/git-svn-forcing-reflection.csh git@github.com:msfukui/git-repo-sample.git master svn://localhost/svn-repo-sample trunk
 ```
 
 ## TODO
