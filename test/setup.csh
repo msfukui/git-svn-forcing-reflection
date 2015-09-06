@@ -1,4 +1,6 @@
-#!/bin/csh -f
+#!/bin/csh -fe
+
+echo "[test/setup]: start."
 
 #
 # setup svn repository sample.
@@ -42,3 +44,5 @@ git push -u origin master
 cd ..
 
 cd ../..
+
+echo "[test/setup]: end."

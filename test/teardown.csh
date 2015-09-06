@@ -1,4 +1,6 @@
-#!/bin/csh -f
+#!/bin/csh -fe
+
+echo "[test/teardown]: start."
 
 cd repository/svn
 make stop
@@ -9,3 +11,11 @@ cd ../..
 cd repository/git
 rm -fr git-repo.git git-repo-sample
 cd ../..
+
+if (-f .reflection-prev_git_commit) then
+  rm -f .reflection-prev_git_commit
+endif
+
+#rm -fr temp.*.*
+
+echo "[test/teardown]: end."

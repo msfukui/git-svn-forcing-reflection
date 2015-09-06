@@ -1,4 +1,4 @@
-#!/bin/csh -f
+#!/bin/csh -fe
 
 if ($1 == "" || $2 == "") then
   echo "ERROR: Argument error."
@@ -11,6 +11,9 @@ setenv LANG C
 set gitrepo   = "$1"
 set gitbranch = "$2"
 
+echo "git-first start."
+echo "git-repository: [$gitrepo/$gitbranch]"
+
 set datetime = `date +"%Y%m%d%H%M%S"`
 set tempdir = "temp.$datetime.$$"
 
@@ -22,7 +25,7 @@ cd $tempdir
 git clone -b $gitbranch $gitrepo git
 
 cd git
-git log --pretty=format:"%H" HEAD^..HEAD | head -1 >! ../../$prev_git_commit_file
+git log -1 --pretty=format:"%H" >! ../../$prev_git_commit_file
 cd ..
 
 cd ..
@@ -31,7 +34,6 @@ rm -fr $tempdir
 set value = `cat $prev_git_commit_file`
 
 echo ""
-echo "git-repository: [$gitrepo/$gitbranch]"
 echo "  Created [$prev_git_commit_file]."
 echo "  Last commit SHA-1 hash value [$value]."
 echo "OK."
