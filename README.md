@@ -69,7 +69,9 @@ $ ./bin/git-svn-forcing-reflection.csh git@github.com:msfukui/git-repo-sample.gi
 
 * svn への commit 時のコミットログメッセージをもう少しわかりやすくしたい。
 
-* 万が一 svn の内容と git の内容がずれた時が怖いので、定期的に compare する仕組みを追加したい。
+* svn の内容と git の内容がずれた時が怖いので、定期的に compare する仕組みを追加したい。
+
+* 標準出力メッセージをちゃんと表示できるようにしたい。
 
 ## License
 
