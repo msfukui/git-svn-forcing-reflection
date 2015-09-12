@@ -8,13 +8,12 @@ echo "[setup]: start."
 
 # before setup
 svn --version > /dev/null
-echo 'store-plaintext-passwords = yes' >> ~/.subversion/servers
 
 cd repository/svn
 svnadmin create svn-repo > /dev/null
 make start > /dev/null
 
-svn checkout --username=svn-repo --password=svn-repo svn://localhost svn-repo-sample > /dev/null
+svn checkout --non-interactive --username=svn-repo --password=svn-repo svn://localhost svn-repo-sample > /dev/null
 cd svn-repo-sample
 mkdir trunk
 svn add trunk > /dev/null
