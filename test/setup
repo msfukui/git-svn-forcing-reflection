@@ -1,5 +1,7 @@
 #!/bin/csh -fe
 
+set SVN_OPTION = "--username svn-repo --password svn-repo --config-option servers:global:store-plaintext-passwords=yes"
+
 echo "[setup]: start."
 
 #
@@ -13,21 +15,21 @@ cd repository/svn
 svnadmin create svn-repo > /dev/null
 make start > /dev/null
 
-svn checkout --non-interactive --username=svn-repo --password=svn-repo svn://localhost svn-repo-sample > /dev/null
+svn checkout $SVN_OPTION svn://localhost svn-repo-sample > /dev/null
 cd svn-repo-sample
 mkdir trunk
 svn add trunk > /dev/null
-svn commit --username=svn-repo --password=svn-repo -m "svn の初回コミット。（trunk 作成）" > /dev/null
-svn update --username=svn-repo --password=svn-repo > /dev/null
+svn commit $SVN_OPTION -m "svn の初回コミット。（trunk 作成）" > /dev/null
+svn update $SVN_OPTION > /dev/null
 cd ..
 rm -fr svn-repo-sample
 
-svn checkout --non-interactive --username=svn-repo --password=svn-repo svn://localhost/trunk svn-repo-sample > /dev/null
+svn checkout $SVN_OPTION svn://localhost/trunk svn-repo-sample > /dev/null
 cd svn-repo-sample
 cp -pr ../../../data/svn/* .
 svn add * > /dev/null
-svn commit --username=svn-repo --password=svn-repo -m "svn の二回目コミット。（trunk にテストファイルを追加。）" > /dev/null
-svn update --username=svn-repo --password=svn-repo > /dev/null
+svn commit $SVN_OPTION -m "svn の二回目コミット。（trunk にテストファイルを追加。）" > /dev/null
+svn update $SVN_OPTION > /dev/null
 cd ..
 
 cd ../..
@@ -38,14 +40,16 @@ cd ../..
 
 # before setup
 git --version > /dev/null
-git config --global user.name "Git-SVN Overwrite"
-git config --global user.email "git-svn-overwrite@users"
 
 cd repository/git
 git init --bare git-repo.git > /dev/null
+git config --local user.name "Git-SVN Overwrite"
+git config --local user.email "git-svn-overwrite@users"
 
 git init git-repo-sample > /dev/null
 cd git-repo-sample
+git config --local user.name "Git-SVN Overwrite"
+git config --local user.email "git-svn-overwrite@users"
 git remote add origin ../git-repo.git > /dev/null
 cp -pr ../../../data/git/* .
 git add . > /dev/null
