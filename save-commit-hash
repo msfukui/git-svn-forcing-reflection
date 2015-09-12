@@ -54,7 +54,7 @@ set commit_hash_temp_file = ".commit_hash_temp_file"
 mkdir -p $tempdir
 
 (git clone -b $gitbranch $gitrepo $tempdir/git > /dev/null) >& /dev/null
-if ($? != 0) then
+if ($status != 0) then
   echo "ERROR: Git repository clone error."
   echo "ERROR: git-repository: [$gitrepo/$gitbranch]"
   exit 2
@@ -63,7 +63,7 @@ endif
 cd $tempdir
 cd git
 git log -1 --pretty=format:"%H" >! ../$commit_hash_temp_file
-if ($? != 0) then
+if ($status != 0) then
   echo "ERROR: Git repository log error."
   echo "ERROR: git-repository: [$gitrepo/$gitbranch]"
   exit 3

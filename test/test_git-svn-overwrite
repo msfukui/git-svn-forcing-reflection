@@ -6,7 +6,7 @@ set test_datetime = `date +"%Y%m%d%H%M%S"`
 echo "[test/dry-run]: start."
 ./setup
 echo "[execute]: start."
-csh -fx ../git-svn-overwrite --dry-run repository/git/git-repo.git master svn://localhost trunk
+../git-svn-overwrite --dry-run repository/git/git-repo.git master svn://localhost trunk
 echo "[execute]: end."
 echo "[verify]: start."
 cd repository/git/git-repo-sample
@@ -15,7 +15,7 @@ cd ../../svn/svn-repo-sample
 svn update --username=svn-repo --password=svn-repo > /dev/null
 cd ../../..
 diff -q -r --exclude=.git --exclude=.svn repository/git/git-repo-sample repository/svn/svn-repo-sample
-if ($? == "0") then
+if ($status == "0") then
   echo "Assertion Error."
   exit 2
 endif
@@ -40,7 +40,7 @@ cd ../../svn/svn-repo-sample
 svn update --username=svn-repo --password=svn-repo > /dev/null
 cd ../../..
 diff -q -r --exclude=.git --exclude=.svn repository/git/git-repo-sample repository/svn/svn-repo-sample
-if ($? != "0") then
+if ($status != "0") then
   echo "Assertion Error."
   exit 2
 endif
@@ -65,7 +65,7 @@ cd ../../svn/svn-repo-sample
 svn update --username=svn-repo --password=svn-repo > /dev/null
 cd ../../..
 diff -q -r --exclude=.git --exclude=.svn repository/git/git-repo-sample repository/svn/svn-repo-sample
-if ($? != "0") then
+if ($status != "0") then
   echo "Assertion Error."
   exit 2
 endif
