@@ -10,7 +10,7 @@ echo "[execute]: start."
 echo "[execute]: end."
 echo "[verify]: start."
 cd repository/git/git-repo-sample
-git pull origin master > /dev/null
+(git pull origin master > /dev/null) >& /dev/null
 cd ../../svn/svn-repo-sample
 svn update --username=svn-repo --password=svn-repo > /dev/null
 cd ../../..
@@ -35,7 +35,7 @@ echo "[execute]: start."
 echo "[execute]: end."
 echo "[verify]: start."
 cd repository/git/git-repo-sample
-git pull origin master > /dev/null
+(git pull origin master > /dev/null) >& /dev/null
 cd ../../svn/svn-repo-sample
 svn update --username=svn-repo --password=svn-repo > /dev/null
 cd ../../..
@@ -60,7 +60,7 @@ echo "[execute]: start."
 echo "[execute]: end."
 echo "[verify]: start."
 cd repository/git/git-repo-sample
-git pull origin master > /dev/null
+(git pull origin master > /dev/null) >& /dev/null
 cd ../../svn/svn-repo-sample
 svn update --username=svn-repo --password=svn-repo > /dev/null
 cd ../../..
