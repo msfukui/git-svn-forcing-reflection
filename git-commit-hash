@@ -1,0 +1,81 @@
+#!/bin/csh -fe
+
+if ($1 == "" || $2 == "") then
+  echo "ERROR: Argument error."
+  echo "ERROR: Usage: $ $0 [-f(--commit-hash-file) file_name] git-repo git-branch"
+  exit 1
+endif
+
+setenv LANG C
+
+set gitrepo   = ""
+set gitbranch = ""
+set commit_hash_file = ".overwrite-prev_git_commit"
+
+while ($#argv != 0)
+  switch ($argv[1])
+  case --commit-hash-file:
+  case -f:
+    shift argv
+    set commit_hash_file = "$argv[1]"
+    shift argv
+  breaksw
+  case -*:
+    echo "ERROR: Argument error."
+    echo "ERROR: Usage: $ $0 [-f(--commit-hash-file) file_name] git-repo git-branch"
+    exit 1
+  breaksw
+  default:
+    if ($#argv < 2) then
+      echo "ERROR: Argument error."
+      echo "ERROR: Usage: $ $0 [-f(--commit-hash-file) file_name] git-repo git-branch"
+      exit 1
+    endif
+    set i = 1
+    set repo = ()
+    while ($i < 3)
+      switch ($argv[1])
+      case -*:
+        echo "ERROR: Argument error."
+        echo "ERROR: Usage: $ $0 [-f(--commit-hash-file) file_name] git-repo git-branch"
+        exit 1
+      breaksw
+      default:
+        set repo = ($repo $argv[1])
+        shift argv
+        @ i++
+      breaksw
+      endsw
+    end
+    set gitrepo   = $repo[1]
+    set gitbranch = $repo[2]
+  breaksw
+endsw
+
+echo "git-commit-hash start."
+echo "git-repository: [$gitrepo/$gitbranch]"
+
+set datetime = `date +"%Y%m%d%H%M%S"`
+set tempdir = "temp.$datetime.$$"
+
+set commit_hash_temp_file = ".commit_hash_temp_file"
+
+mkdir -p $tempdir
+cd $tempdir
+
+git clone -b $gitbranch $gitrepo git
+
+cd git
+git log -1 --pretty=format:"%H" >! ../$commit_hash_temp_file
+cd ..
+
+cd ..
+mv -f $tempdir/$commit_hash_temp_file $commit_hash_file
+rm -fr $tempdir
+
+set value = `cat $commit_hash_file`
+
+echo ""
+echo "  Created [$commit_hash_file]."
+echo "  Last commit SHA-1 hash value [$value]."
+echo "OK."

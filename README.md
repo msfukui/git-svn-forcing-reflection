@@ -1,4 +1,4 @@
-# git-svn-forcing-reflection
+# git-svn-overwrite
 
 ## What's this?
 
@@ -22,9 +22,9 @@ svn から git ベースにコード・レポジトリの移行を進めるに�
 
 ## Note
 
-* 前回の commit ログからの差分を元に svn の commit メッセージを生成するため、__初回実行時__には、前回の commit の SHA-1 ハッシュ値を、実行時ディレクトリ直下の .reflection-prev\_git\_commit に書き込んでおく必要があります。（次回以降は .reflection-prev\_git\_commit に前回分が記録されますので以後の作成は不要です。）
+* 前回の commit ログからの差分を元に svn の commit メッセージを生成するため、__初回実行時__には、前回の commit の SHA-1 ハッシュ値を、指定したファイル（既定値は実行時ディレクトリ直下の .overwrite-prev\_git\_commit です）に書き込んでおく必要があります。次回以降は、指定したファイルに、前回分が記録されますので、以後の作成は不要です。
 
-* svn →git への初期移行直後の SHA-1 ハッシュ値の保存用に git-first.csh を使うことができます。git レポジトリの位置と branch を指定するとその最新の commit の SHA-1 ハッシュ値を .reflection-prev\_git\_commit に保存します。
+* svn →git への初期移行直後の SHA-1 ハッシュ値の保存用に git-first.csh を使うことができます。git レポジトリの位置と branch を指定するとその最新の commit の SHA-1 ハッシュ値を 指定したファイル（既定値は実行時ディレクトリ直下の .orerwrite-prev\_git\_commit です）に保存します。
 
 * svn の commit ログには author などの情報は反映しないことになるため、svn のログは捨てる覚悟でお願いします。
 
@@ -34,11 +34,11 @@ svn から git ベースにコード・レポジトリの移行を進めるに�
 
 ```sh
 $ mkdir bin; cd bin
-$ wget https://raw.githubusercontent.com/msfukui/git-svn-forcing-reflection/master/git-svn-forcing-reflection.csh
-$ wget https://raw.githubusercontent.com/msfukui/git-svn-forcing-reflection/master/git-first.csh
-$ chmod 750 git-svn-forcing-reflection.csh git-first.csh
+$ wget https://raw.githubusercontent.com/msfukui/git-svn-overwrite/master/git-svn-overwrite
+$ wget https://raw.githubusercontent.com/msfukui/git-svn-overwrite/master/git-commit-hash
+$ chmod 750 git-svn-overwrite git-commit-hash
 $ cd ..
-$ ./bin/git-first.csh git@github.com:msfukui/git-repo-sample.git master
+$ ./bin/git-commit-hash git@github.com:msfukui/git-repo-sample.git master
 Cloning into 'git'...
 remote: Counting objects: 176, done.
 remote: Total 176 (delta 0), reused 0 (delta 0), pack-reused 176
@@ -47,33 +47,25 @@ Resolving deltas: 100% (80/80), done.
 Checking connectivity... done.
 
 git-repository: [git@github.com:msfukui/git-repo-sample.git/master]
-  Created [.reflection-prev_git_commit].
+  Created [.overwrite-prev_git_commit].
   Last commit SHA-1 hash value [16b67fa41447a5b6b882dd867f795bea20b560e7].
 OK.
 $
 ```
 
-### Reflection
+### Overwrite
 
 #### dry running
 
 ```sh
-$ ./bin/git-svn-forcing-reflection.csh --dry-run git@github.com:msfukui/git-repo-sample.git master svn://localhost/svn-repo-sample trunk
+$ ./bin/git-svn-overwrite --dry-run --commit-hash-file commit-hash-file.txt git@github.com:msfukui/git-repo-sample.git master svn://localhost/svn-repo-sample trunk
 ```
 
 #### commit
 
 ```sh
-$ ./bin/git-svn-forcing-reflection.csh git@github.com:msfukui/git-repo-sample.git master svn://localhost/svn-repo-sample trunk
+$ ./bin/git-svn-overwrite --commit-hash-file commit-hash-file.txt git@github.com:msfukui/git-repo-sample.git master svn://localhost/svn-repo-sample trunk
 ```
-
-## TODO
-
-* svn への commit 時の commit ログメッセージをもう少しわかりやすくしたい。
-
-* svn の内容と git の内容がずれた時が怖いので、compare する仕組みを追加したい。
-
-* 標準出力メッセージをきちんと表示できるようにしたい。
 
 ## License
 

@@ -10,12 +10,12 @@ else
   exit 1
 endif
 
-echo "[test/git-svn-forcing-reflection]: start."
+echo "[test/git-svn-overwrite]: start."
 
 set test_datetime = `date +"%Y%m%d%H%M%S"`
 echo "[test/dry-run]: start."
 ./setup.csh
-../git-svn-forcing-reflection.csh --dry-run ../repository/git/git-repo.git master svn://localhost trunk
+../git-svn-overwrite --dry-run ../repository/git/git-repo.git master svn://localhost trunk
 cd repository/git/git-repo-sample
 git pull
 cd ../../svn/svn-repo-sample
@@ -36,7 +36,7 @@ echo "[test/dry-run]: end."
 set test_datetime = `date +"%Y%m%d%H%M%S"`
 echo "[test/commit]: start."
 ./setup.csh
-../git-svn-forcing-reflection.csh ../repository/git/git-repo.git master svn://localhost trunk
+../git-svn-overwrite ../repository/git/git-repo.git master svn://localhost trunk
 cd repository/git/git-repo-sample
 git pull
 cd ../../svn/svn-repo-sample
@@ -57,7 +57,7 @@ echo "[test/commit]: end."
 set test_datetime = `date +"%Y%m%d%H%M%S"`
 echo "[test/commit_hash_file_commit]: start."
 ./setup.csh
-../git-svn-forcing-reflection.csh --commit-hash-file ./.commit_hash_file ../repository/git/git-repo.git master svn://localhost trunk
+../git-svn-overwrite --commit-hash-file ./.commit_hash_file ../repository/git/git-repo.git master svn://localhost trunk
 cd repository/git/git-repo-sample
 git pull
 cd ../../svn/svn-repo-sample
@@ -77,4 +77,4 @@ rm -f ./.commit_hash_file
 ./teardown.csh
 echo "[test/commit_hash_file_commit]: end."
 
-echo "[test/git-svn-forcing-reflection]: end."
+echo "[test/git-svn-overwrite]: end."
