@@ -199,7 +199,8 @@ endif
 echo "Git-repository: [$gitrepo/$gitbranch]"
 echo "Svn-repository: [$svnrepo/$svnbranch]"
 echo ""
-echo "Saved commit hash value: [$commit_hash_value]"
+echo "Created [$commit_hash_file]."
+echo "Saved commit SHA-1 hash value: [$commit_hash_value]"
 echo "Svn commit message: ["
 cat $tempdir/$comment_file
 echo "]"

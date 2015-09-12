@@ -77,7 +77,7 @@ mv -f $tempdir/$commit_hash_temp_file $commit_hash_file
 echo "Git-repository: [$gitrepo/$gitbranch]"
 echo ""
 echo "Created [$commit_hash_file]."
-echo "Saved commit SHA-1 hash value [$value]."
+echo "Saved commit SHA-1 hash value [$value]"
 
 rm -fr $tempdir
 
