@@ -1,0 +1,16 @@
+language: ruby
+rvm:
+  - 2.2
+sudo: false
+addons:
+  apt:
+    packages:
+      - csh
+      - git
+      - subversion
+before_script:
+  - git --version
+  - svn --version
+  - cd test
+script:
+  - ./test_git-svn-overwrite

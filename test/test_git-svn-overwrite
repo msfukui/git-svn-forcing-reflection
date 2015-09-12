@@ -10,17 +10,17 @@ echo "[execute]: start."
 echo "[execute]: end."
 echo "[verify]: start."
 cd repository/git/git-repo-sample
-git pull > /dev/null
+(git pull origin master > /dev/null) >& /dev/null
 cd ../../svn/svn-repo-sample
-svn update > /dev/null
+svn update --username=svn-repo --password=svn-repo > /dev/null
 cd ../../..
 diff -q -r --exclude=.git --exclude=.svn repository/git/git-repo-sample repository/svn/svn-repo-sample
-if ($? == "0") then
+if ($status == "0") then
   echo "Assertion Error."
   exit 2
 endif
 cd repository/svn/svn-repo-sample
-svn update > /dev/null
+svn update --username=svn-repo --password=svn-repo > /dev/null
 svn log -l 1
 cd ../../..
 echo "[verify]: end."
@@ -35,17 +35,17 @@ echo "[execute]: start."
 echo "[execute]: end."
 echo "[verify]: start."
 cd repository/git/git-repo-sample
-git pull > /dev/null
+(git pull origin master > /dev/null) >& /dev/null
 cd ../../svn/svn-repo-sample
-svn update > /dev/null
+svn update --username=svn-repo --password=svn-repo > /dev/null
 cd ../../..
 diff -q -r --exclude=.git --exclude=.svn repository/git/git-repo-sample repository/svn/svn-repo-sample
-if ($? != "0") then
+if ($status != "0") then
   echo "Assertion Error."
   exit 2
 endif
 cd repository/svn/svn-repo-sample
-svn update > /dev/null
+svn update --username=svn-repo --password=svn-repo > /dev/null
 svn log -l 1
 cd ../../..
 echo "[verify]: end."
@@ -60,17 +60,17 @@ echo "[execute]: start."
 echo "[execute]: end."
 echo "[verify]: start."
 cd repository/git/git-repo-sample
-git pull > /dev/null
+(git pull origin master > /dev/null) >& /dev/null
 cd ../../svn/svn-repo-sample
-svn update > /dev/null
+svn update --username=svn-repo --password=svn-repo > /dev/null
 cd ../../..
 diff -q -r --exclude=.git --exclude=.svn repository/git/git-repo-sample repository/svn/svn-repo-sample
-if ($? != "0") then
+if ($status != "0") then
   echo "Assertion Error."
   exit 2
 endif
 cd repository/svn/svn-repo-sample
-svn update > /dev/null
+svn update --username=svn-repo --password=svn-repo > /dev/null
 svn log -l 1
 cd ../../..
 if (-f ./.commit_hash_file) then

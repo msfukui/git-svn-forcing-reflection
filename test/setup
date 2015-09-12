@@ -5,6 +5,11 @@ echo "[setup]: start."
 #
 # setup svn repository sample.
 #
+
+# before setup
+svn --version > /dev/null
+echo 'store-plaintext-passwords = yes' >> ~/.subversion/servers
+
 cd repository/svn
 svnadmin create svn-repo > /dev/null
 make start > /dev/null
@@ -18,7 +23,7 @@ svn update --username=svn-repo --password=svn-repo > /dev/null
 cd ..
 rm -fr svn-repo-sample
 
-svn checkout --username=svn-repo --password=svn-repo svn://localhost/trunk svn-repo-sample > /dev/null
+svn checkout --non-interactive --username=svn-repo --password=svn-repo svn://localhost/trunk svn-repo-sample > /dev/null
 cd svn-repo-sample
 cp -pr ../../../data/svn/* .
 svn add * > /dev/null
@@ -31,6 +36,12 @@ cd ../..
 #
 # setup git repository sample.
 #
+
+# before setup
+git --version > /dev/null
+git config --global user.name "Git-SVN Overwrite"
+git config --global user.email "git-svn-overwrite@users"
+
 cd repository/git
 git init --bare git-repo.git > /dev/null
 

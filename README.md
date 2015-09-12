@@ -1,5 +1,7 @@
 # git-svn-overwrite
 
+[![Build Status](https://travis-ci.org/msfukui/git-svn-overwrite.svg)](https://travis-ci.org/msfukui/git-svn-overwrite)
+
 ## What's this?
 
 git の特定の branch のコードセットを subversion の特定の branch に強制的に上書きして commit するための簡易なスクリプトです。
@@ -14,9 +16,9 @@ svn から git ベースにコード・レポジトリの移行を進めるに�
 
 ## Requirement
 
-* スクリプトは csh で書いているため、実行には csh が必要です。
+* スクリプトは csh, awk, diff で記述しているため、実行時にはそれぞれ必要になります。
 
-* 内部で git, svn, diff, awk を使っているため、それぞれの事前のセットアップが必要です。
+* 内部で git, svn を使用しているため、それぞれ事前のセットアップが必要です。
 
 * 実行時ディレクトリ配下に作業ディレクトリを作成するため、実行時ディレクトリには書き込み権限が必要です。
 
@@ -28,7 +30,7 @@ svn から git ベースにコード・レポジトリの移行を進めるに�
 
 * commit の SHA-1 ハッシュ値の保存先の既定値は、実行時ディレクトリ直下の .orerwrite-prev\_git\_commit としています。
 
-* svn の commit ログには author などの情報は反映しないことになるため、svn のログは捨てる覚悟でお願いします。
+* svn の commit ログは、実行環境に設定されている Subversion の ID に紐付いている author を使って書き込みます。このため使用にあたっては svn のログは捨てる覚悟でお願いします。
 
 ## Usage
 
