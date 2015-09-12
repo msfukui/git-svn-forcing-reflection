@@ -5,12 +5,11 @@ sudo: false
 addons:
   apt:
     packages:
-      - csh
+      - tcsh
       - git
       - subversion
       - subversion-tools
 script:
-  - csh --version
   - git --version
   - svn --version
   - cd test
