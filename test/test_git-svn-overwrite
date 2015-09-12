@@ -6,7 +6,7 @@ set test_datetime = `date +"%Y%m%d%H%M%S"`
 echo "[test/dry-run]: start."
 ./setup
 echo "[execute]: start."
-../git-svn-overwrite --dry-run repository/git/git-repo.git master svn://localhost trunk
+csh -fx ../git-svn-overwrite --dry-run repository/git/git-repo.git master svn://localhost trunk
 echo "[execute]: end."
 echo "[verify]: start."
 cd repository/git/git-repo-sample
