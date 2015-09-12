@@ -1,6 +1,14 @@
 language: ruby
+rvm:
+  - 2.2
+sudo: false
 install:
-  - sudo apt-get install git subversion subversion-tools
+  addons:
+    apt:
+      packages:
+        - git
+        - subversion
+        - subversion-tools
 script:
   - cd test
   - ./test_git-svn-overwrite
