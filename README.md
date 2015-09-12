@@ -1,5 +1,7 @@
 # git-svn-overwrite
 
+[![Build Status](https://travis-ci.org/msfukui/git-svn-overwrite.svg)](https://travis-ci.org/msfukui/git-svn-overwrite)
+
 ## What's this?
 
 git の特定の branch のコードセットを subversion の特定の branch に強制的に上書きして commit するための簡易なスクリプトです。
