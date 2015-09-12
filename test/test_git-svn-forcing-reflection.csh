@@ -54,4 +54,27 @@ cd ../../..
 ./teardown.csh
 echo "[test/commit]: end."
 
+set test_datetime = `date +"%Y%m%d%H%M%S"`
+echo "[test/commit_hash_file_commit]: start."
+./setup.csh
+../git-svn-forcing-reflection.csh --commit-hash-file ./.commit_hash_file ../repository/git/git-repo.git master svn://localhost trunk
+cd repository/git/git-repo-sample
+git pull
+cd ../../svn/svn-repo-sample
+svn update
+cd ../../..
+diff -q -r --exclude=.git --exclude=.svn repository/git/git-repo-sample repository/svn/svn-repo-sample
+if ($? != "0") then
+  echo "Assertion Error."
+  exit 2
+endif
+cd repository/svn/svn-repo-sample
+svn update
+svn log -l 1
+cd ../../..
+cat ./.commit_hash_file
+rm -f ./.commit_hash_file
+./teardown.csh
+echo "[test/commit_hash_file_commit]: end."
+
 echo "[test/git-svn-forcing-reflection]: end."

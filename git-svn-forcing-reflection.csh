@@ -1,26 +1,65 @@
 #!/bin/csh -f
 
-if (($1 == "--dry-run" && ($2 == "" || $3 == "" || $4 == "" || $5 == "")) || \
-    ($1 != "--dry-run" && ($1 == "" || $2 == "" || $3 == "" || $4 == ""))) then
-  echo "ERROR: Argument error."
-  echo "ERROR: Usage: $ $0 [--dry-run] git-repository git-branch-name svn-repository svn-branch-name"
-  exit 1
-endif
-
 setenv LANG C
 
-if ($1 != "--dry-run") then
-  set dry_run_mode = "off"
-  set gitrepo   = "$1"
-  set gitbranch = "$2"
-  set svnrepo   = "$3"
-  set svnbranch = "$4"
-else
-  set dry_run_mode = "on"
-  set gitrepo   = "$2"
-  set gitbranch = "$3"
-  set svnrepo   = "$4"
-  set svnbranch = "$5"
+set dry_run_mode = "off"
+set gitrepo   = ""
+set gitbranch = ""
+set svnrepo   = ""
+set svnbranch = ""
+set commit_hash_file = ".reflection-prev_git_commit"
+
+while ($#argv != 0)
+  switch ($argv[1])
+  case --dry-run:
+    set dry_run_mode = "on"
+    shift argv
+  breaksw
+  case --commit-hash-file:
+  case -f:
+    shift argv
+    set commit_hash_file = "$argv[1]"
+    shift argv
+  breaksw
+  case -*:
+    echo "ERROR: Argument error."
+    echo "ERROR: Usage: $ $0 [--dry-run] [-f(--commit-hash-file) file_name] git-repo git-branch svn-repo svn-branch"
+    exit 1
+  breaksw
+  default:
+    if ($#argv < 4) then
+      echo "ERROR: Argument error."
+      echo "ERROR: Usage: $ $0 [--dry-run] [-f(--commit-hash-file) file_name] git-repo git-branch svn-repo svn-branch"
+      exit 1
+    endif
+    set i = 1
+    set repo = ()
+    while ($i < 5)
+      switch ($argv[1])
+      case -*:
+        echo "ERROR: Argument error."
+        echo "ERROR: Usage: $ $0 [--dry-run] [-f(--commit-hash-file) file_name] git-repo git-branch svn-repo svn-branch"
+        exit 1
+      breaksw
+      default:
+        set repo = ($repo $argv[1])
+        shift argv
+        @ i++
+      breaksw
+      endsw
+    end
+    set gitrepo   = $repo[1]
+    set gitbranch = $repo[2]
+    set svnrepo   = $repo[3]
+    set svnbranch = $repo[4]
+  breaksw
+  endsw
+end
+
+if ($gitrepo == "" || $gitbranch == "" || $svnrepo == "" || $svnbranch == "") then
+  echo "ERROR: Argument error."
+  echo "ERROR: Usage: $ $0 [--dry-run] [-f(--commit-hash-file) file_name] git-repo git-branch svn-repo svn-branch"
+  exit 2
 endif
 
 set datetime = `date +"%Y%m%d%H%M%S"`
@@ -29,9 +68,10 @@ set tempdir = "temp.$datetime.$$"
 set diff_file = ".reflection-diff_file"
 
 set comment_file = ".reflection-comment"
-set prev_git_commit_file = ".reflection-prev_git_commit"
-touch $prev_git_commit_file
-set prev_git_commit = `cat $prev_git_commit_file`
+
+set commit_hash_temp_file = ".commit_hash_temp_file"
+touch $commit_hash_file
+set prev_git_commit = `cat $commit_hash_file`
 
 echo "[git-svn-forcing-reflection]"
 
@@ -40,7 +80,7 @@ else
   echo "dry-running..."
 endif
 
-mkdir $tempdir
+mkdir -p $tempdir
 cd $tempdir
 
 git clone -b $gitbranch $gitrepo git
@@ -98,11 +138,7 @@ if ($prev_git_commit == "") then
 else
   git log --graph ^${prev_git_commit} HEAD >>! ../$comment_file
 endif
-if ($dry_run_mode == "off") then
-  git log -1 --pretty=format:"%H" >! ../../$prev_git_commit_file
-else
-  git log -1 --pretty=format:"%H" >! ../$prev_git_commit_file
-endif
+git log -1 --pretty=format:"%H" >! ../$commit_hash_temp_file
 cd ..
 
 #
@@ -120,14 +156,13 @@ svn status
 echo "Svn commit message: ["
 cat ../$comment_file
 echo "]"
-if ($dry_run_mode == "off") then
-  echo "Last commit hash value: [`cat ../../$prev_git_commit_file`]"
-else
-  echo "Last commit hash value: [`cat ../$prev_git_commit_file`]"
-endif
+echo "Last commit hash value: [`cat ../$commit_hash_temp_file`]"
 cd ..
 
 cd ..
+if ($dry_run_mode == "off") then
+  mv -f $tempdir/$commit_hash_temp_file $commit_hash_file
+endif
 rm -fr $tempdir
 
 echo ""
