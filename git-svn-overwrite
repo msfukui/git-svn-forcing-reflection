@@ -7,7 +7,7 @@ set gitrepo   = ""
 set gitbranch = ""
 set svnrepo   = ""
 set svnbranch = ""
-set commit_hash_file = ".reflection-prev_git_commit"
+set commit_hash_file = ".overwrite-prev_git_commit"
 
 while ($#argv != 0)
   switch ($argv[1])
@@ -65,15 +65,15 @@ endif
 set datetime = `date +"%Y%m%d%H%M%S"`
 set date     = `date`
 set tempdir = "temp.$datetime.$$"
-set diff_file = ".reflection-diff_file"
+set diff_file = ".overwrite-diff_file"
 
-set comment_file = ".reflection-comment"
+set comment_file = ".overwrite-comment"
 
 set commit_hash_temp_file = ".commit_hash_temp_file"
 touch $commit_hash_file
 set prev_git_commit = `cat $commit_hash_file`
 
-echo "[git-svn-forcing-reflection]"
+echo "[git-svn-overwrite]"
 
 if ($dry_run_mode == "off") then
 else
@@ -130,7 +130,7 @@ $diff_file | csh -fx
 # create commit logs and save current "HEAD" commit value.
 #
 cd git
-echo "Author: git-svn-forcing-reflection" >! ../$comment_file
+echo "Author: git-svn-overwrite" >! ../$comment_file
 echo "Date: $date" >>! ../$comment_file
 echo "" >>! ../$comment_file
 if ($prev_git_commit == "") then
@@ -168,4 +168,4 @@ rm -fr $tempdir
 echo ""
 echo "git-repository: [$gitrepo/$gitbranch]"
 echo "svn-repository: [$svnrepo/$svnbranch]"
-echo "Reflection, OK."
+echo "Overwrite, OK."

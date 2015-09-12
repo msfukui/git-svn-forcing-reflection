@@ -12,8 +12,8 @@ cd repository/git
 rm -fr git-repo.git git-repo-sample
 cd ../..
 
-if (-f .reflection-prev_git_commit) then
-  rm -f .reflection-prev_git_commit
+if (-f .overwrite-prev_git_commit) then
+  rm -f .overwrite-prev_git_commit
 endif
 
 #rm -fr temp.*.*
