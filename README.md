@@ -35,21 +35,15 @@ svn から git ベースにコード・レポジトリの移行を進めるに�
 ```sh
 $ mkdir bin; cd bin
 $ wget https://raw.githubusercontent.com/msfukui/git-svn-overwrite/master/git-svn-overwrite
-$ wget https://raw.githubusercontent.com/msfukui/git-svn-overwrite/master/git-commit-hash
-$ chmod 750 git-svn-overwrite git-commit-hash
+$ wget https://raw.githubusercontent.com/msfukui/git-svn-overwrite/master/save-commit-hash
+$ chmod 750 git-svn-overwrite save-commit-hash
 $ cd ..
-$ ./bin/git-commit-hash git@github.com:msfukui/git-repo-sample.git master
-Cloning into 'git'...
-remote: Counting objects: 176, done.
-remote: Total 176 (delta 0), reused 0 (delta 0), pack-reused 176
-Receiving objects: 100% (176/176), 25.50 KiB | 0 bytes/s, done.
-Resolving deltas: 100% (80/80), done.
-Checking connectivity... done.
+$ ./bin/save-commit-hash git@github.com:msfukui/git-repo-sample.git master
+Git-repository: [git@github.com:msfukui/git-repo-sample.git/master]
 
-git-repository: [git@github.com:msfukui/git-repo-sample.git/master]
-  Created [.overwrite-prev_git_commit].
-  Last commit SHA-1 hash value [16b67fa41447a5b6b882dd867f795bea20b560e7].
-OK.
+Created [.overwrite-prev_git_commit].
+Saved commit SHA-1 hash value [16b67fa41447a5b6b882dd867f795bea20b560e7].
+Save, OK.
 $
 ```
 
@@ -59,12 +53,31 @@ $
 
 ```sh
 $ ./bin/git-svn-overwrite --dry-run --commit-hash-file commit-hash-file.txt git@github.com:msfukui/git-repo-sample.git master svn://localhost/svn-repo-sample trunk
+Dry running...
+Git-repository: [git@github.com:msfukui/git-repo-sample.git/master]
+Svn-repository: [svn://localhost/trunk]
+
+Created [commit-hash-file.txt].
+Saved commit SHA-1 hash value: [017220003bf740d23d750755543e712d821bffa9]
+Svn commit message: [
+...
+]
+Overwrite, OK.
 ```
 
 #### commit
 
 ```sh
 $ ./bin/git-svn-overwrite --commit-hash-file commit-hash-file.txt git@github.com:msfukui/git-repo-sample.git master svn://localhost/svn-repo-sample trunk
+Git-repository: [git@github.com:msfukui/git-repo-sample.git/master]
+Svn-repository: [svn://localhost/trunk]
+
+Created [commit-hash-file.txt].
+Saved commit SHA-1 hash value: [017220003bf740d23d750755543e712d821bffa9]
+Svn commit message: [
+...
+]
+Overwrite, OK.
 ```
 
 ## License

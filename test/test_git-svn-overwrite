@@ -1,25 +1,18 @@
 #!/bin/csh -f
 
-if ($1 == "" ) then
-  set test_debug = "off"
-else if ($1 == "on") then
-  set test_debug = "on"
-else
-  echo "ERROR: Argument error."
-  echo "ERROR: Usage: $0 [on]"
-  exit 1
-endif
-
 echo "[test/git-svn-overwrite]: start."
 
 set test_datetime = `date +"%Y%m%d%H%M%S"`
 echo "[test/dry-run]: start."
-./setup.csh
-../git-svn-overwrite --dry-run ../repository/git/git-repo.git master svn://localhost trunk
+./setup
+echo "[execute]: start."
+../git-svn-overwrite --dry-run repository/git/git-repo.git master svn://localhost trunk
+echo "[execute]: end."
+echo "[verify]: start."
 cd repository/git/git-repo-sample
-git pull
+git pull > /dev/null
 cd ../../svn/svn-repo-sample
-svn update
+svn update > /dev/null
 cd ../../..
 diff -q -r --exclude=.git --exclude=.svn repository/git/git-repo-sample repository/svn/svn-repo-sample
 if ($? == "0") then
@@ -27,20 +20,24 @@ if ($? == "0") then
   exit 2
 endif
 cd repository/svn/svn-repo-sample
-svn update
+svn update > /dev/null
 svn log -l 1
 cd ../../..
-./teardown.csh
+echo "[verify]: end."
+./teardown
 echo "[test/dry-run]: end."
 
 set test_datetime = `date +"%Y%m%d%H%M%S"`
 echo "[test/commit]: start."
-./setup.csh
-../git-svn-overwrite ../repository/git/git-repo.git master svn://localhost trunk
+./setup
+echo "[execute]: start."
+../git-svn-overwrite repository/git/git-repo.git master svn://localhost trunk
+echo "[execute]: end."
+echo "[verify]: start."
 cd repository/git/git-repo-sample
-git pull
+git pull > /dev/null
 cd ../../svn/svn-repo-sample
-svn update
+svn update > /dev/null
 cd ../../..
 diff -q -r --exclude=.git --exclude=.svn repository/git/git-repo-sample repository/svn/svn-repo-sample
 if ($? != "0") then
@@ -48,20 +45,24 @@ if ($? != "0") then
   exit 2
 endif
 cd repository/svn/svn-repo-sample
-svn update
+svn update > /dev/null
 svn log -l 1
 cd ../../..
-./teardown.csh
+echo "[verify]: end."
+./teardown
 echo "[test/commit]: end."
 
 set test_datetime = `date +"%Y%m%d%H%M%S"`
 echo "[test/commit_hash_file_commit]: start."
-./setup.csh
-../git-svn-overwrite --commit-hash-file ./.commit_hash_file ../repository/git/git-repo.git master svn://localhost trunk
+./setup
+echo "[execute]: start."
+../git-svn-overwrite --commit-hash-file ./.commit_hash_file repository/git/git-repo.git master svn://localhost trunk
+echo "[execute]: end."
+echo "[verify]: start."
 cd repository/git/git-repo-sample
-git pull
+git pull > /dev/null
 cd ../../svn/svn-repo-sample
-svn update
+svn update > /dev/null
 cd ../../..
 diff -q -r --exclude=.git --exclude=.svn repository/git/git-repo-sample repository/svn/svn-repo-sample
 if ($? != "0") then
@@ -69,12 +70,17 @@ if ($? != "0") then
   exit 2
 endif
 cd repository/svn/svn-repo-sample
-svn update
+svn update > /dev/null
 svn log -l 1
 cd ../../..
-cat ./.commit_hash_file
-rm -f ./.commit_hash_file
-./teardown.csh
+if (-f ./.commit_hash_file) then
+  rm -f ./.commit_hash_file
+else
+  echo "Assertion Error."
+  exit 3
+endif
+echo "[verify]: end."
+./teardown
 echo "[test/commit_hash_file_commit]: end."
 
 echo "[test/git-svn-overwrite]: end."
