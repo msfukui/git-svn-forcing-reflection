@@ -1,0 +1,6 @@
+language: ruby
+install:
+  - sudo apt-get install git subversion subversion-tools
+script:
+  - cd test
+  - ./test_git-svn-overwrite
