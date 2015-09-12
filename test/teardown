@@ -1,9 +1,9 @@
 #!/bin/csh -fe
 
-echo "[test/teardown]: start."
+echo "[teardown]: start."
 
 cd repository/svn
-make stop
+make stop > /dev/null
 rm -f svnserve.log
 rm -fr svn-repo svn-repo-sample
 cd ../..
@@ -16,6 +16,4 @@ if (-f .overwrite-prev_git_commit) then
   rm -f .overwrite-prev_git_commit
 endif
 
-#rm -fr temp.*.*
-
-echo "[test/teardown]: end."
+echo "[teardown]: end."

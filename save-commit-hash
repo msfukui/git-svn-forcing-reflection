@@ -1,11 +1,5 @@
 #!/bin/csh -fe
 
-if ($1 == "" || $2 == "") then
-  echo "ERROR: Argument error."
-  echo "ERROR: Usage: $ $0 [-f(--commit-hash-file) file_name] git-repo git-branch"
-  exit 1
-endif
-
 setenv LANG C
 
 set gitrepo   = ""
@@ -52,30 +46,39 @@ while ($#argv != 0)
   breaksw
 endsw
 
-echo "git-commit-hash start."
-echo "git-repository: [$gitrepo/$gitbranch]"
-
 set datetime = `date +"%Y%m%d%H%M%S"`
 set tempdir = "temp.$datetime.$$"
 
 set commit_hash_temp_file = ".commit_hash_temp_file"
 
 mkdir -p $tempdir
+
+(git clone -b $gitbranch $gitrepo $tempdir/git > /dev/null) >& /dev/null
+if ($? != 0) then
+  echo "ERROR: Git repository clone error."
+  echo "ERROR: git-repository: [$gitrepo/$gitbranch]"
+  exit 2
+endif
+
 cd $tempdir
-
-git clone -b $gitbranch $gitrepo git
-
 cd git
 git log -1 --pretty=format:"%H" >! ../$commit_hash_temp_file
+if ($? != 0) then
+  echo "ERROR: Git repository log error."
+  echo "ERROR: git-repository: [$gitrepo/$gitbranch]"
+  exit 3
+endif
+set value = `cat ../$commit_hash_temp_file`
 cd ..
 
 cd ..
 mv -f $tempdir/$commit_hash_temp_file $commit_hash_file
+
+echo "Git-repository: [$gitrepo/$gitbranch]"
+echo ""
+echo "Created [$commit_hash_file]."
+echo "Saved commit SHA-1 hash value [$value]."
+
 rm -fr $tempdir
 
-set value = `cat $commit_hash_file`
-
-echo ""
-echo "  Created [$commit_hash_file]."
-echo "  Last commit SHA-1 hash value [$value]."
-echo "OK."
+echo "Save, OK."

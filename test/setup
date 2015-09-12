@@ -1,0 +1,48 @@
+#!/bin/csh -fe
+
+echo "[setup]: start."
+
+#
+# setup svn repository sample.
+#
+cd repository/svn
+svnadmin create svn-repo > /dev/null
+make start > /dev/null
+
+svn checkout --username=svn-repo --password=svn-repo svn://localhost svn-repo-sample > /dev/null
+cd svn-repo-sample
+mkdir trunk
+svn add trunk > /dev/null
+svn commit --username=svn-repo --password=svn-repo -m "svn の初回コミット。（trunk 作成）" > /dev/null
+svn update --username=svn-repo --password=svn-repo > /dev/null
+cd ..
+rm -fr svn-repo-sample
+
+svn checkout --username=svn-repo --password=svn-repo svn://localhost/trunk svn-repo-sample > /dev/null
+cd svn-repo-sample
+cp -pr ../../../data/svn/* .
+svn add * > /dev/null
+svn commit --username=svn-repo --password=svn-repo -m "svn の二回目コミット。（trunk にテストファイルを追加。）" > /dev/null
+svn update --username=svn-repo --password=svn-repo > /dev/null
+cd ..
+
+cd ../..
+
+#
+# setup git repository sample.
+#
+cd repository/git
+git init --bare git-repo.git > /dev/null
+
+git init git-repo-sample > /dev/null
+cd git-repo-sample
+git remote add origin ../git-repo.git > /dev/null
+cp -pr ../../../data/git/* .
+git add . > /dev/null
+git commit -m "git の初回コミット。（master にテストファイルを追加。）" > /dev/null
+(git push -u origin master > /dev/null) >& /dev/null
+cd ..
+
+cd ../..
+
+echo "[setup]: end."

@@ -59,7 +59,7 @@ end
 if ($gitrepo == "" || $gitbranch == "" || $svnrepo == "" || $svnbranch == "") then
   echo "ERROR: Argument error."
   echo "ERROR: Usage: $ $0 [--dry-run] [-f(--commit-hash-file) file_name] git-repo git-branch svn-repo svn-branch"
-  exit 2
+  exit 1
 endif
 
 set datetime = `date +"%Y%m%d%H%M%S"`
@@ -73,18 +73,27 @@ set commit_hash_temp_file = ".commit_hash_temp_file"
 touch $commit_hash_file
 set prev_git_commit = `cat $commit_hash_file`
 
-echo "[git-svn-overwrite]"
-
 if ($dry_run_mode == "off") then
 else
-  echo "dry-running..."
+  echo "Dry running..."
 endif
 
 mkdir -p $tempdir
-cd $tempdir
 
-git clone -b $gitbranch $gitrepo git
-svn checkout $svnrepo/$svnbranch svn
+(git clone -b $gitbranch $gitrepo $tempdir/git > /dev/null) >& /dev/null
+if ($? != 0) then
+  echo "ERROR: Git repository clone error."
+  echo "ERROR: Git-repository: [$gitrepo/$gitbranch]"
+  exit 2
+endif
+(svn checkout $svnrepo/$svnbranch $tempdir/svn > /dev/null) >& /dev/null
+if ($? != 0) then
+  echo "ERROR: Svn repository checkout error."
+  echo "ERROR: Svn-repository: [$svnrepo/$svnbranch]"
+  exit 3
+endif
+
+cd $tempdir
 
 #
 # list differ repository to svn and git.
@@ -104,7 +113,7 @@ awk '\
       print "mv -f", p "/" $4, n "/"; } \
   /^Files .* differ$/ \\
     { print "mv -f", $4 " " $2; }' \
-$diff_file | csh -fx
+$diff_file | csh -f
 
 #
 # create operating svn-repository command and execute.
@@ -124,7 +133,7 @@ awk 'BEGIN{ print "cd svn" ;} \
         n = substr($3, 5, length($3)-5) "/"; \
       } \
       print "svn add", n $4; }' \
-$diff_file | csh -fx
+$diff_file | csh -f > /dev/null
 
 #
 # create commit logs and save current "HEAD" commit value.
@@ -135,10 +144,26 @@ echo "Date: $date" >>! ../$comment_file
 echo "" >>! ../$comment_file
 if ($prev_git_commit == "") then
   git log --graph HEAD >>! ../$comment_file
+  if ($? != 0) then
+    echo "ERROR: Git repository log error."
+    echo "ERROR: Git-repository: [$gitrepo/$gitbranch]"
+    exit 4
+  endif
 else
   git log --graph ^${prev_git_commit} HEAD >>! ../$comment_file
+  if ($? != 0) then
+    echo "ERROR: Git repository log error."
+    echo "ERROR: Git-repository: [$gitrepo/$gitbranch]"
+    exit 5
+  endif
 endif
 git log -1 --pretty=format:"%H" >! ../$commit_hash_temp_file
+if ($? != 0) then
+  echo "ERROR: Git repository log error."
+  echo "ERROR: Git-repository: [$gitrepo/$gitbranch]"
+  exit 6
+endif
+set commit_hash_value = `cat ../$commit_hash_temp_file`
 cd ..
 
 #
@@ -147,25 +172,38 @@ cd ..
 cd svn
 if ($dry_run_mode == "off") then
   setenv LANG ja_JP.UTF-8
-  svn commit --file ../$comment_file
+  (svn commit --file ../$comment_file > /dev/null) >& /dev/null
+  if ($? != 0) then
+    echo "ERROR: Svn repository commit error."
+    echo "ERROR: Svn-repository: [$svnrepo/$svnbranch]"
+    exit 6
+  endif
+  setenv LANG C
+else
+  setenv LANG ja_JP.UTF-8
+  (svn status > /dev/null) >& /dev/null
+  if ($? != 0) then
+    echo "ERROR: Svn repository status error."
+    echo "ERROR: Svn-repository: [$svnrepo/$svnbranch]"
+    exit 6
+  endif
   setenv LANG C
 endif
-
-echo "Svn changes:"
-svn status
-echo "Svn commit message: ["
-cat ../$comment_file
-echo "]"
-echo "Last commit hash value: [`cat ../$commit_hash_temp_file`]"
 cd ..
 
 cd ..
 if ($dry_run_mode == "off") then
   mv -f $tempdir/$commit_hash_temp_file $commit_hash_file
 endif
+
+echo "Git-repository: [$gitrepo/$gitbranch]"
+echo "Svn-repository: [$svnrepo/$svnbranch]"
+echo ""
+echo "Saved commit hash value: [$commit_hash_value]"
+echo "Svn commit message: ["
+cat $tempdir/$comment_file
+echo "]"
+
 rm -fr $tempdir
 
-echo ""
-echo "git-repository: [$gitrepo/$gitbranch]"
-echo "svn-repository: [$svnrepo/$svnbranch]"
 echo "Overwrite, OK."
