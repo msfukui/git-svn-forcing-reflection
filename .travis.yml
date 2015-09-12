@@ -8,9 +8,10 @@ addons:
       - tcsh
       - git
       - subversion
-      - subversion-tools
-script:
+before_script:
+  - tcsh --version
   - git --version
   - svn --version
   - cd test
+script:
   - ./test_git-svn-overwrite

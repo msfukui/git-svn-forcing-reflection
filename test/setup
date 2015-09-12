@@ -7,6 +7,7 @@ echo "[setup]: start."
 #
 
 # before setup
+svn --version > /dev/null
 echo 'store-plaintext-passwords = yes' >> ~/.subversion/servers
 
 cd repository/svn
@@ -37,6 +38,7 @@ cd ../..
 #
 
 # before setup
+git --version > /dev/null
 git config --global user.name "Git-SVN Overwrite"
 git config --global user.email "git-svn-overwrite@users"
 
