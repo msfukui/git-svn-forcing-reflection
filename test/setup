@@ -1,5 +1,11 @@
 #!/bin/csh -fe
 
+if ( $1 == "" ) then
+  set data_dir = "diff"
+else
+  set data_dir = "$1"
+endif
+
 set SVN_OPTION = "--username svn-repo --password svn-repo --config-option servers:global:store-plaintext-passwords=yes"
 
 echo "[setup]: start."
@@ -26,7 +32,7 @@ rm -fr svn-repo-sample
 
 svn checkout $SVN_OPTION svn://localhost/trunk svn-repo-sample > /dev/null
 cd svn-repo-sample
-cp -pr ../../../data/svn/* .
+cp -pr ../../../data/$data_dir/svn/* .
 svn add * > /dev/null
 svn commit $SVN_OPTION -m "svn の二回目コミット。（trunk にテストファイルを追加。）" > /dev/null
 svn update $SVN_OPTION > /dev/null
@@ -51,7 +57,7 @@ cd git-repo-sample
 git config --local user.name "Git-SVN Overwrite"
 git config --local user.email "git-svn-overwrite@users"
 git remote add origin ../git-repo.git > /dev/null
-cp -pr ../../../data/git/* .
+cp -pr ../../../data/$data_dir/git/* .
 git add . > /dev/null
 git commit -m "git の初回コミット。（master にテストファイルを追加。）" > /dev/null
 (git push -u origin master > /dev/null) >& /dev/null

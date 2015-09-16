@@ -2,10 +2,11 @@
 
 set SVN_OPTION = "--username svn-repo --password svn-repo --config-option servers:global:store-plaintext-passwords=yes"
 
-echo "[test/git-svn-overwrite]: start."
+echo "[test/$0:t]: start."
 
+set test_name     = "dry-run"
 set test_datetime = `date +"%Y%m%d%H%M%S"`
-echo "[test/dry-run]: start."
+echo "[test/$test_name]: start."
 ./setup
 echo "[execute]: start."
 ../git-svn-overwrite --dry-run repository/git/git-repo.git master svn://localhost trunk
@@ -23,14 +24,20 @@ if ($status == "0") then
 endif
 cd repository/svn/svn-repo-sample
 svn update $SVN_OPTION > /dev/null
-svn log -l 1
+svn log -l 1 | grep -q -f ../../../assert_file_$test_name
+if ($status != "0") then
+  echo "Assertion Error."
+  exit 3
+endif
 cd ../../..
+echo "Verify, OK."
 echo "[verify]: end."
 ./teardown
-echo "[test/dry-run]: end."
+echo "[test/$test_name]: end."
 
+set test_name     = "commit"
 set test_datetime = `date +"%Y%m%d%H%M%S"`
-echo "[test/commit]: start."
+echo "[test/$test_name]: start."
 ./setup
 echo "[execute]: start."
 ../git-svn-overwrite repository/git/git-repo.git master svn://localhost trunk
@@ -48,14 +55,20 @@ if ($status != "0") then
 endif
 cd repository/svn/svn-repo-sample
 svn update $SVN_OPTION > /dev/null
-svn log -l 1
+svn log -l 1 | grep -q -f ../../../assert_file_$test_name
+if ($status != "0") then
+  echo "Assertion Error."
+  exit 3
+endif
 cd ../../..
+echo "Verify, OK."
 echo "[verify]: end."
 ./teardown
-echo "[test/commit]: end."
+echo "[test/$test_name]: end."
 
+set test_name     = "commit_hash_file_commit"
 set test_datetime = `date +"%Y%m%d%H%M%S"`
-echo "[test/commit_hash_file_commit]: start."
+echo "[test/$test_name]: start."
 ./setup
 echo "[execute]: start."
 ../git-svn-overwrite --commit-hash-file ./.commit_hash_file repository/git/git-repo.git master svn://localhost trunk
@@ -73,16 +86,58 @@ if ($status != "0") then
 endif
 cd repository/svn/svn-repo-sample
 svn update $SVN_OPTION > /dev/null
-svn log -l 1
+svn log -l 1 | grep -q -f ../../../assert_file_$test_name
+if ($status != "0") then
+  echo "Assertion Error."
+  exit 3
+endif
 cd ../../..
 if (-f ./.commit_hash_file) then
   rm -f ./.commit_hash_file
 else
   echo "Assertion Error."
-  exit 3
+  exit 4
 endif
+echo "Verify, OK."
 echo "[verify]: end."
 ./teardown
-echo "[test/commit_hash_file_commit]: end."
+echo "[test/$test_name]: end."
 
-echo "[test/git-svn-overwrite]: end."
+set test_name     = "nodiff"
+set test_datetime = `date +"%Y%m%d%H%M%S"`
+echo "[test/$test_name]: start."
+./setup nodiff
+echo "[execute]: start."
+../git-svn-overwrite --commit-hash-file ./dummy_file repository/git/git-repo.git master svn://localhost trunk
+echo "[execute]: end."
+echo "[verify]: start."
+cd repository/git/git-repo-sample
+(git pull origin master > /dev/null) >& /dev/null
+cd ../../svn/svn-repo-sample
+svn update $SVN_OPTION > /dev/null
+cd ../../..
+diff -q -r --exclude=.git --exclude=.svn repository/git/git-repo-sample repository/svn/svn-repo-sample
+if ($status != "0") then
+  echo "Assertion Error."
+  exit 2
+endif
+cd repository/svn/svn-repo-sample
+svn update $SVN_OPTION > /dev/null
+svn log -l 1 | grep -q -f ../../../assert_file_$test_name
+if ($status != "0") then
+  echo "Assertion Error."
+  exit 3
+endif
+cd ../../..
+if (-f ./dummy_file) then
+  rm -f ./dummy_file
+else
+  echo "Assertion Error."
+  exit 4
+endif
+echo "Verify, OK."
+echo "[verify]: end."
+./teardown
+echo "[test/$test_name]: end."
+
+echo "[test/$0:t]: end."
